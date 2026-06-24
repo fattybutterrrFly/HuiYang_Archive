@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>灯下 · 文学情感共鸣推荐</title>
+<style>
+  :root {
+    --bg: #f3ece0;
+    --paper: #faf4e8;
+    --ink: #2b2a28;
+    --ink-soft: #5a5550;
+    --accent: #8b5a3c;
+    --accent-soft: #b07d5b;
+    --line: #d9cfbf;
+    --danger: #a63f3f;
+    --shadow: 0 6px 24px rgba(60, 45, 30, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Georgia", "宋体", "SimSun", "Noto Serif CJK SC", serif;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.6), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(210,180,140,0.25), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .title {
+    font-size: 38px;
+    letter-spacing: 12px;
+    padding-left: 12px;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 14px;
+    letter-spacing: 6px;
+    padding-left: 6px;
+    margin: 0;
+  }
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    margin: 24px auto 0;
+    opacity: 0.6;
+  }
+
+  /* 控制面板 — API keys */
+  .panel {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .panel h3 {
+    margin: 0 0 12px;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+  .row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .row label {
+    flex: 1;
+    min-width: 220px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .row input[type=text], .row input[type=password] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: #fffdf7;
+    font-family: inherit;
+    font-size: 13px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .row input:focus {
+    outline: none;
+    border-color: var(--accent-soft);
+  }
+  button {
+    background: var(--accent);
+    color: #fff8ea;
+    border: none;
+    padding: 10px 24px;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  button:hover { background: #9a6a4c; }
+  button:active { transform: translateY(1px); }
+  button.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent-soft);
+  }
+  button.ghost:hover { background: rgba(139, 90, 60, 0.08); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Query area */
+  .query-area {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 32px;
+  }
+  .prompt {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 2;
+    margin: 0 0 16px;
+    letter-spacing: 2px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    background: #fffdf7;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 2;
+    resize: vertical;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+  textarea:focus { outline: none; border-color: var(--accent-soft); }
+  .hint-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .chip {
+    padding: 4px 12px;
+    background: transparent;
+    border: 1px dashed var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all .2s;
+  }
+  .chip:hover { background: rgba(139, 90, 60, 0.08); }
+
+  /* Status */
+  .status {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin: 32px 0;
+  }
+  .loader {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 4px;
+    animation: blink 1.4s infinite;
+  }
+  .loader:nth-child(2) { animation-delay: .2s; }
+  .loader:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.2; transform: scale(0.8);} 40% {opacity: 1; transform: scale(1);} }
+
+  /* Intent display */
+  .intent-box {
+    margin: 0 0 32px;
+    padding: 20px 28px;
+    background: rgba(255,255,255,0.4);
+    border-left: 2px solid var(--accent);
+  }
+  .intent-box .label {
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  .intent-box .tags { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tag {
+    padding: 3px 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-radius: 2px;
+  }
+  .tag.emotion { border-color: rgba(139, 90, 60, 0.3); color: var(--accent); }
+  .tag.query { color: var(--ink-soft); font-style: italic; }
+
+  /* Recommendations */
+  .rec {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+    animation: fadeIn .8s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .rec::before {
+    content: "❖";
+    position: absolute;
+    top: 14px; right: 20px;
+    color: var(--accent-soft);
+    opacity: 0.5;
+    font-size: 18px;
+  }
+  .rec .meta {
+    color: var(--accent);
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .rec .author {
+    color: var(--ink-soft);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+  }
+  .rec .excerpt {
+    font-size: 16px;
+    line-height: 2.1;
+    color: var(--ink);
+    white-space: pre-wrap;
+    border-left: 3px solid var(--accent-soft);
+    padding: 12px 0 12px 20px;
+    margin: 18px 0 22px;
+  }
+  .why-label {
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin: 18px 0 6px;
+  }
+  .why {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 2;
+    font-style: italic;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .crisis {
+    background: #f7e4e0;
+    border: 1px solid #d3a59a;
+    padding: 32px;
+    color: #6a2828;
+    white-space: pre-wrap;
+    line-height: 2;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .footer-note {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin-top: 64px;
+    opacity: 0.6;
+  }
+
+  .error {
+    color: var(--danger);
+    text-align: center;
+    padding: 20px;
+    background: #f7e4e0;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 class="title">灯 下</h1>
+    <p class="subtitle">把你的心境，交给文字</p>
+    <div class="divider"></div>
+  </header>
+
+  <section class="panel" id="setupPanel">
+    <h3>准 备</h3>
+    <div class="row">
+      <label>DeepSeek API Key
+        <input type="password" id="dsKey" placeholder="sk-..." />
+      </label>
+    </div>
+    <div class="row" style="margin-top: 16px;">
+      <button id="btnSaveKeys" class="ghost">保 存 Key</button>
+      <button id="btnBuild" class="ghost">构建索引（首次运行）</button>
+      <span id="statusTag" style="color:var(--ink-soft); font-size:12px; letter-spacing:2px;">读取中…</span>
+    </div>
+  </section>
+
+  <section class="query-area">
+    <p class="prompt">你此刻的心境是怎样的？请写下你的感受，无论长短。</p>
+    <textarea id="query" placeholder="例如：最近加班很累，晚上走在空无一人的街上，忽然觉得心里空落落的，像缺少了什么。想找一段温柔安静的文字……"></textarea>
+    <div class="hint-chips">
+      <span class="chip" data-q="工作太累，想找一段安静的文字让自己平静下来。">平静</span>
+      <span class="chip" data-q="一个人走在冬夜的街上，看着路灯一盏盏亮起，有一点孤独但又觉得很美。">孤独</span>
+      <span class="chip" data-q="雨季绵绵，心里有点湿漉漉的，想起一些旧的人和事。">怀旧</span>
+      <span class="chip" data-q="心里闷闷的，像闷在不透风的房间里，想读一段能让人呼吸的文字。">呼吸</span>
+    </div>
+    <div style="margin-top: 20px; text-align:center;">
+      <button id="btnRec">递 我 一 段 文 字</button>
+    </div>
+  </section>
+
+  <div id="output"></div>
+
+  <p class="footer-note">—— 愿你在字里行间，找到一盏属于自己的灯 ——</p>
+</main>
+
+<script>
+const API = "";
+
+const $ = (id) => document.getElementById(id);
+
+async function checkHealth() {
+  try {
+    const r = await fetch(API + "/api/health").then(x => x.json());
+    $("statusTag").textContent =
+      (r.index_built ? "✓ 索引已就绪" : "⚠ 未构建索引；请先点「构建索引」") +
+      (r.deepseek_key ? "｜DS Key ✓" : "｜请配置 DeepSeek") +
+      (r.openai_key ? "｜Embedding ✓" : "｜请配置 OpenAI");
+  } catch (e) {
+    $("statusTag").textContent = "无法连接后端，请确认 server.py 已运行";
+  }
+}
+
+// 从 localStorage 恢复 key
+$("dsKey").value = localStorage.getItem("dsKey") || "";
+
+$("btnSaveKeys").onclick = async () => {
+  const ds = $("dsKey").value.trim();
+  if (ds) localStorage.setItem("dsKey", ds);
+  try {
+    await fetch(API + "/api/config-keys", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deepseek_key: ds })
+    });
+    const btn = $("btnSaveKeys");
+    const t = btn.textContent; btn.textContent = "✓ 已保存";
+    setTimeout(() => btn.textContent = t, 1200);
+    checkHealth();
+  } catch(e) { alert("保存失败：" + e); }
+};
+
+$("btnBuild").onclick = async () => {
+  const btn = $("btnBuild");
+  btn.disabled = true;
+  btn.textContent = "构建中…（首次需下载模型约 1.3GB）";
+  try {
+    const r = await fetch(API + "/api/build-index", { method: "POST" }).then(x => x.json());
+    if (r.ok) {
+      btn.textContent = `✓ 索引完成（${r.n_docs} 段）`;
+      checkHealth();
+    } else {
+      btn.textContent = "构建失败";
+      alert(r.error);
+    }
+  } catch (e) {
+    btn.textContent = "构建失败";
+    alert(e);
+  } finally {
+    setTimeout(() => { btn.disabled = false; btn.textContent = "构建索引（首次运行）"; }, 2000);
+  }
+};
+
+// chip 填充
+document.querySelectorAll(".chip").forEach(c => {
+  c.onclick = () => { $("query").value = c.dataset.q; $("query").focus(); };
+});
+
+function escapeHTML(s) {
+  return String(s || "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[ch]));
+}
+
+function renderIntent(intent) {
+  if (!intent || typeof intent !== "object") return "";
+  const emotions = Array.isArray(intent.emotions) ? intent.emotions : [];
+  const imageries = Array.isArray(intent.imageries) ? intent.imageries : [];
+  const queries = Array.isArray(intent.queries) ? intent.queries : [];
+  const core = intent.core_mood || "";
+  if (!emotions.length && !imageries.length && !core) return "";
+  return `
+    <div class="intent-box">
+      <div class="label">· 读 到 你 ·</div>
+      ${core ? `<div style="font-size:15px; color:var(--ink); margin: 4px 0 12px;">「${escapeHTML(core)}」</div>` : ""}
+      ${emotions.length ? `<div class="tags"><span style="font-size:12px;color:var(--ink-soft);letter-spacing:2px;margin-right:6px;">情绪</span>${emotions.map(e => `<span class="tag emotion">${escapeHTML(e)}</span>`).join("")}</div>` : ""}
+      ${imageries.length ? `<div class="tags" style="margin-top:8px;"><span style="font-size:12px;color:var(--ink-soft);letter-spacing:2px;margin-right:6px;">意象</span>${imageries.map(e => `<span class="tag">${escapeHTML(e)}</span>`).join("")}</div>` : ""}
+      ${queries.length ? `<div class="tags" style="margin-top:8px;"><span style="font-size:12px;color:var(--ink-soft);letter-spacing:2px;margin-right:6px;">隐喻检索</span>${queries.map(e => `<span class="tag query">${escapeHTML(e)}</span>`).join("")}</div>` : ""}
+    </div>`;
+}
+
+function renderRecs(recs) {
+  if (!Array.isArray(recs) || !recs.length) return `<div class="error">未能找到合适的段落。</div>`;
+  return recs.map(r => `
+    <article class="rec">
+      <div class="meta">${escapeHTML(r.book_name || r.title || "")}</div>
+      <div class="author">— ${escapeHTML(r.author || "")} —</div>
+      <div class="excerpt">${escapeHTML(r.excerpt || "")}</div>
+      <div class="why-label">Why this</div>
+      <div class="why">${escapeHTML(r.why || r.recommendation || "")}</div>
+    </article>
+  `).join("");
+}
+
+$("btnRec").onclick = async () => {
+  const q = $("query").value.trim();
+  if (!q) { alert("请写下你的心境"); return; }
+  const out = $("output");
+  out.innerHTML = `<div class="status"><span class="loader"></span><span class="loader"></span><span class="loader"></span><br><br>正在倾听你的文字，在书架间寻找……</div>`;
+  $("btnRec").disabled = true;
+  try {
+    const r = await fetch(API + "/api/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: q,
+        deepseek_key: $("dsKey").value.trim()
+      })
+    }).then(x => x.json());
+
+    if (!r.ok) {
+      out.innerHTML = `<div class="error">${escapeHTML(r.error || "请求失败")}</div>`;
+      return;
+    }
+    if (r.crisis) {
+      out.innerHTML = `<div class="crisis">${escapeHTML(r.crisis_message || "")}</div>`;
+      return;
+    }
+    const meta = `<div class="status" style="margin-bottom:32px;">重试 ${r.retry_count} 次｜最高评分 ${r.max_score}｜耗时 ${r.latency_ms} ms</div>`;
+    out.innerHTML = renderIntent(r.intent) + meta + renderRecs(r.recommendations);
+  } catch (e) {
+    out.innerHTML = `<div class="error">请求失败：${escapeHTML(e.message || String(e))}<br><br>请确认已在终端运行 <code>python backend/server.py</code></div>`;
+  } finally {
+    $("btnRec").disabled = false;
+  }
+};
+
+// 快捷键
+$("query").addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    $("btnRec").click();
+  }
+});
+
+checkHealth();
+</script>
+</body>
+</html>

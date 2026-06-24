@@ -43,3 +43,8 @@ logs/
 
 # Node modules (if you add JS later)
 node_modules/
+
+# Build artifacts (large, model-specific)
+data/embeddings.npy
+data/meta.json
+
